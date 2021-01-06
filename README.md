@@ -11,3 +11,6 @@ Arounf line 32 we begin to set op  our tallys. The function of these is to count
 Once i had my data in a useable format i needed to join it all together in a useble format. I used the inner join function to complete this. Inner Joincreates a new table by combining rows that have matching values. We had to edit some of our column names to ensure they had matching values to continue. inner_join was used to connect all our tallys using the keys created by changing column names. These inner_joins create the ad_data that I was able to use for the graphs to try and visualise how affective the ad campaigns were. This ad_data contains the names of the advertisers, the campaigns , their Budgets and the amount of impressions,clicks and conversions.
 
 
+https://github.com/robbiemcdonagh1/Statistical_Programming_CA2/issues/2#issue-780840570
+![alt text](https://github.com/robbiemcdonagh1/Statistical_Programming_CA2/issues/2#issue-780840570
+raw=true)
