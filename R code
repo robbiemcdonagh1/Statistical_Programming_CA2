@@ -1,0 +1,121 @@
+install.packages("tidyverse")
+#Load libraries 
+library(tibble)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(RColorBrewer)
+#Load the datasets 
+Advertisers <- tibble(read_csv("C:/Users/Robert McDonagh/Desktop/Statistical Programming/advertiser.csv"))
+Campaigns <- tibble(read_csv("C:/Users/Robert McDonagh/Desktop/Statistical Programming/campaigns.csv"))
+Impressions <- tibble(read_csv("C:/Users/Robert McDonagh/Desktop/Statistical Programming/clicks.csv"))
+Clicks <- tibble(read_csv("C:/Users/Robert McDonagh/Desktop/Statistical Programming/conversions.csv"))
+Conversions <- tibble(read_csv("C:/Users/Robert McDonagh/Desktop/Statistical Programming/impressions.csv"))
+
+#view datasets and ensure datasets imported properly
+view(advertiser)
+view(campaign)
+view(clicks)
+view(conversions)
+view(impressions)
+
+#check for null values to tidy data 
+is.na(advertiser)
+is.na(campaign)
+is.na(noOfClicks)
+is.na(conversions)
+is.na(impressions)
+
+names(Advertisers)[names(Advertisers) == "ID"] <- "advertiser_id"
+names(Advertisers)[names(Advertisers) == "name"] <- "AdvertiserName"
+
+#creates a tally to count clicks
+count_clicks <- Clicks %>% group_by(campaign_id) %>% tally()
+names(count_clicks)[names(count_clicks) == "campaign_id"] <- "id"
+names(count_clicks)[names(count_clicks) == "n"] <- "NoOfClicks"
+
+#creates a tally to count impressions
+count_impressions <- Impressions %>% group_by(campaign_id) %>% tally()
+names(count_impressions)[names(count_impressions) == "campaign_id"] <- "id"
+names(count_impressions)[names(count_impressions) == "n"] <- "NoOfImpressions"
+
+#creates a tally to count conversions
+count_conversions <- Conversions %>% group_by(campaign_id) %>% tally()
+names(count_conversions)[names(count_conversions) == "campaign_id"] <- "id"
+names(count_conversions)[names(count_conversions) == "n"] <- "NoOfConversions"
+
+
+#following 3 lines of code creates a new table by combining rows that have matching values 
+add_clicks <- inner_join(add_impressions,count_clicks, key = "id")
+
+add_impressions <- inner_join(Campaigns,count_impressions, key = "id")
+
+add_conversions <- inner_join(add_clicks,count_conversions, key ="id")
+
+#we then add them all to one big table with everything 
+entire_table <- inner_join(add_conversions,Advertisers, key = "advertiser_id")
+names(entire_table)[names(entire_table) == "name"] <- "CampaignName"
+view(entire_table)
+
+
+#Graphs
+#Plot budgets of each campaign
+budget_hist <- ggplot(data = entire_table)+ geom_histogram(mapping = aes(x=budget), binwidth = 1000)
+#display graph
+budget_hist + ggtitle("Budget Histogram") + xlab("Budget Value") + ylab("Amount")
+
+budget_freq <- ggplot(data = entire_table)+ geom_freqpoly(mapping = aes(x=budget), binwidth = 1000)
+#display
+budget_freq + ggtitle("Budget Frequency Graph") + xlab("Budget Value") + ylab("Amount")
+
+
+
+#Plot histogram with bin width 1, (clicks can only increase by 1)
+click_hist <- ggplot(data = entire_table)+ geom_histogram(mapping = aes(x=NoOfClicks), binwidth = 1)
+
+click_hist + ggtitle("Click Histogram") + xlab("Number of Clicks Recorded") + ylab("Campaign Count")
+
+
+#Plot histogram to show impressions.
+impression_hist <- ggplot(data = entire_table)+ geom_histogram(mapping = aes(x=NoOfImpressions), binwidth = 1)
+
+impression_hist + ggtitle("Impression Histogram") + xlab("Number of Impressions") + ylab("Campaign Count")
+
+#Plot histogram to show conversion information.
+conversion_hist <- ggplot(data = entire_table)+ geom_histogram(mapping = aes(x=NoOfConversions), binwidth = 1)
+
+conversion_hist + ggtitle("Conversion Histogram") + xlab("Number of Conversions") + ylab("Campaign Count")
+
+
+
+##Comparing Budget to Impression
+ggplot(data = entire_table) + geom_point(mapping = aes(x = budget,y = NoOfImpressions)) + ggtitle("Impressions against Budgets")
+
+## Comparing Impressions to Clicks
+ggplot(data = entire_table) + geom_point(mapping = aes(x = NoOfImpressions,y = NoOfClicks,)) + ggtitle("Impressions against Clicks")
+
+## Comparing Clicks to Conversions
+ggplot(data = entire_table) + geom_point(mapping = aes(x = NoOfConversions,y = NoOfClicks,)) + ggtitle("Conversions against Clicks")
+
+## Comparing Budget to Clicks
+ggplot(data = entire_table) + geom_point(mapping = aes(x = budget,y = NoOfClicks)) + ggtitle("Clicks against Budget")
+
+## Comparing Conversions to Budget
+ggplot(data = entire_table) + geom_point(mapping = aes(x = budget,y = NoOfConversions)) + ggtitle("Conversions against Budget")
+
+
+##Comparing the Campaigns with their Budgets
+ggplot(data=entire_table, aes(x=CampaignName, y=budget)) + 
+  geom_bar(stat="identity", width=.25, fill = "blue") + ggtitle("Campaigns with Budgets")
+  
+##Comparing the Campaigns with their Impressions
+ggplot(data=entire_table, aes(x=CampaignName, y=NoOfImpressions)) +
+  geom_bar(stat="identity", width=.25, fill = "blue") + ggtitle("Impressions of Campaigns")
+  
+## Comparing the Campaigns with their Conversions
+ggplot(data=entire_table, aes(x=CampaignName, y=NoOfConversions)) +
+  geom_bar(stat="identity", width=.25, fill = "blue") + ggtitle("Conversions vs Campaign")
+
+##Comparing the Campaigns with their Clicks
+ggplot(data=entire_table, aes(x=CampaignName, y=NoOfClicks)) +
+  geom_bar(stat="identity", width=.25, fill = "blue") + ggtitle("Clicks vs Campaign")
