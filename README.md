@@ -12,5 +12,4 @@ Once i had my data in a useable format i needed to join it all together in a use
 
 
 https://github.com/robbiemcdonagh1/Statistical_Programming_CA2/issues/2#issue-780840570
-![alt text](https://github.com/robbiemcdonagh1/Statistical_Programming_CA2/issues/2#issue-780840570
-raw=true)
+![alt text](https://github.com/robbiemcdonagh1/Statistical_Programming_CA2/issues/2#issue-780840570)
